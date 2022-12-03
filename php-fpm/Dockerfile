@@ -787,27 +787,13 @@ ARG INSTALL_IMAGEMAGICK=false
 ARG IMAGEMAGICK_VERSION=latest
 ENV IMAGEMAGICK_VERSION ${IMAGEMAGICK_VERSION}
 
-RUN if [ ${INSTALL_IMAGEMAGICK} = true ]; then \
-    apt-get install -yqq libmagickwand-dev imagemagick && \
-    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]; then \
-      cd /tmp && \
-      if [ ${IMAGEMAGICK_VERSION} = "latest" ]; then \
-        git clone https://github.com/Imagick/imagick; \
-      else \
-        git clone --branch ${IMAGEMAGICK_VERSION} https://github.com/Imagick/imagick; \
-      fi && \
-      cd imagick && \
-      phpize && \
-      ./configure && \
-      make && \
-      make install && \
-      rm -r /tmp/imagick; \
-    else \
-      pecl install imagick; \
-    fi && \
+RUN apt-get update; \
+    # Imagick extension
+    apt-get install -y libmagickwand-dev; \
+    pecl install imagick; \
     docker-php-ext-enable imagick; \
-    php -m | grep -q 'imagick' \
-;fi
+    # Success
+    true
 
 ###########################################################################
 # SMB:
@@ -1273,6 +1259,8 @@ ARG INSTALL_DNSUTILS=false
 RUN if [ ${INSTALL_DNSUTILS} = true ]; then \
     apt-get update && apt-get install -y dnsutils \
 ;fi
+
+RUN docker-php-ext-install exif
 
 ###########################################################################
 # Check PHP version:
