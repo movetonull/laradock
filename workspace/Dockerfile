@@ -1127,7 +1127,7 @@ USER root
 ARG INSTALL_IMAGE_OPTIMIZERS=false
 
 RUN if [ ${INSTALL_IMAGE_OPTIMIZERS} = true ]; then \
-    apt-get install -y jpegoptim optipng pngquant gifsicle && \
+    apt-get install -y jpegoptim optipng pngquant gifsicle webp && \
     if [ ${INSTALL_NODE} = true ]; then \
         exec bash && . ~/.bashrc && npm install -g svgo \
     ;fi\
@@ -1223,6 +1223,7 @@ ARG IMAGEMAGICK_VERSION=latest
 ENV IMAGEMAGICK_VERSION ${IMAGEMAGICK_VERSION}
 
 RUN if [ ${INSTALL_IMAGEMAGICK} = true ]; then \
+    apt-get update -yqq && \
     apt-get install -y libmagickwand-dev imagemagick && \
     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]; then \
       apt-get install -y git && \
